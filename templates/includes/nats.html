@@ -1,0 +1,41 @@
+{{define "content"}}
+
+<div class="ui">
+  <p>ClusterId: {{ .nats.ClusterId }}</p>
+  <p>ServerId: {{ .nats.ServerId }}</p>
+</div>
+
+<div class="ui two cards">
+  {{ range .nats.Channels }}
+  <div class="ui card">
+    <div class="content">
+      <div class="header">{{ .Name }}</div>
+      <div class="description">
+        <h4>Subscriptions</h4>
+        {{ with .Subscriptions }}
+        <div class="ui bulleted list">
+          {{ range . }}
+          <div class="item">{{ .ClientId | default "unknown-client" }}</div>
+          {{ end }}
+        </div>
+        {{ else }}
+        <p><em>No Subscriptions</em></p>
+        {{ end }}
+      </div>
+    </div>
+    <div class="extra content">
+      <span class="left floated like">
+        <i class="paper plane icon"></i>
+        {{ .MessagesCount }}
+      </span>
+      <span class="right floated star">
+        <i class="eye icon"></i>
+        {{.Subscriptions | len}}
+      </span>
+    </div>
+  </div>
+  {{ end }}
+</div>
+{{end}}
+
+{{ define "javascript"}}{{end}}
