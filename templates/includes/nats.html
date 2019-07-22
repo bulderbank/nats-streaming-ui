@@ -1,9 +1,18 @@
 {{define "content"}}
 
-<div class="ui">
-  <p>ClusterId: {{ .nats.ClusterId }}</p>
-  <p>ServerId: {{ .nats.ServerId }}</p>
+<div class="ui horizontal segments">
+  <div class="ui segment">
+    <p>ClusterId: {{ .nats.ClusterId }}</p>
+  </div>
+  <div class="ui segment">
+    <p>ServerId: {{ .nats.ServerId }}</p>
+  </div>
+  <div class="ui segment">
+    <p>Timestamp: {{ .nats.Timestamp }}</p>
+  </div>
 </div>
+
+<div class="ui divider"></div>
 
 <div class="ui three column doubling stackable grid">
   {{ range .nats.Channels }}
