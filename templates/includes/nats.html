@@ -8,33 +8,33 @@
 <div class="ui three column doubling stackable grid">
   {{ range .nats.Channels }}
   <div class="column">
-  <div class="ui fluid card">
-    <div class="content">
-      <div class="header">{{ .Name }}</div>
-      <div class="description">
-        <h4>Subscriptions</h4>
-        {{ with .Subscriptions }}
-        <div class="ui bulleted list">
-          {{ range . }}
-          <div class="item">{{ .ClientId | default "unknown-client" }}</div>
+    <div class="ui fluid {{ .Color }} card">
+      <div class="content">
+        <a class="header" href="/channels/{{ .Name }}">{{ .Name }}</a>
+        <div class="description">
+          <h4>Subscriptions</h4>
+          {{ with .Subscriptions }}
+          <div class="ui bulleted list">
+            {{ range . }}
+            <div class="item">{{ .ClientId | default "unknown-client" }}</div>
+            {{ end }}
+          </div>
+          {{ else }}
+          <p><em>No Subscriptions</em></p>
           {{ end }}
         </div>
-        {{ else }}
-        <p><em>No Subscriptions</em></p>
-        {{ end }}
+      </div>
+      <div class="extra content">
+        <span class="left floated like">
+          <i class="paper plane icon"></i>
+          {{ .MessagesCount }} messages
+        </span>
+        <span class="right floated star">
+          <i class="eye icon"></i>
+          {{.Subscriptions | len}} clients
+        </span>
       </div>
     </div>
-    <div class="extra content">
-      <span class="left floated like">
-        <i class="paper plane icon"></i>
-        {{ .MessagesCount }}
-      </span>
-      <span class="right floated star">
-        <i class="eye icon"></i>
-        {{.Subscriptions | len}}
-      </span>
-    </div>
-  </div>
   </div>
   {{ end }}
 </div>

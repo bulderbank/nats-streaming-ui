@@ -13,6 +13,60 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type natsSubscription struct {
+	ClientId     string `json:"client_id"`
+	Inbox        string `json:"inbox"`
+	AckInbox     string `json:"ack_inbox"`
+	QueueName    string `json:"queue_name"`
+	IsDurable    bool   `json:"is_durable"`
+	IsOffline    bool   `json:"is_offline"`
+	MaxInflight  int    `json:"max_inflight"`
+	AckWait      int    `json:"ack_wait"`
+	LastSent     int    `json:"last_sent"`
+	PendingCount int    `json:"pending_count"`
+	IsStalled    bool   `json:"is_stalled"`
+}
+
+func (sub natsSubscription) IsHealthy() bool {
+	return !sub.IsOffline && !sub.IsStalled && sub.PendingCount == 0
+}
+
+type natsChannel struct {
+	Name          string             `json:"name"`
+	MessagesCount int                `json:"msgs"`
+	BytesCount    int                `json:"bytes"`
+	FirstSequence int                `json:"first_seq"`
+	LastSequence  int                `json:"last_seq"`
+	Subscriptions []natsSubscription `json:"subscriptions"`
+}
+
+func (ch natsChannel) Color() string {
+	color := "green"
+
+	if len(ch.Subscriptions) == 0 {
+		color = "orange"
+	}
+
+	for _, sub := range ch.Subscriptions {
+		if !sub.IsHealthy() {
+			color = "red"
+		}
+	}
+
+	return color
+}
+
+type natsChannels struct {
+	ClusterId string        `json:"cluster_id"`
+	ServerId  string        `json:"server_id"`
+	Timestamp string        `json:"now"`
+	Offset    int           `json:"offset"`
+	Limit     int           `json:"limit"`
+	Count     int           `json:"count"`
+	Total     int           `json:"total"`
+	Channels  []natsChannel `json:"channels"`
+}
+
 func main() {
 	router := gin.Default()
 	router.SetFuncMap(sprig.HtmlFuncMap())
@@ -21,40 +75,6 @@ func main() {
 	router.GET("/favicon.ico", func(c *gin.Context) {
 		c.AbortWithStatus(http.StatusOK)
 	})
-
-	type natsSubscription struct {
-		ClientId     string `json:"client_id"`
-		Inbox        string `json:"inbox"`
-		AckInbox     string `json:"ack_inbox"`
-		QueueName    string `json:"queue_name"`
-		IsDurable    bool   `json:"is_durable"`
-		IsOffline    bool   `json:"is_offline"`
-		MaxInflight  int    `json:"max_inflight"`
-		AckWait      int    `json:"ack_wait"`
-		LastSent     int    `json:"last_sent"`
-		PendingCount int    `json:"pending_count"`
-		IsStalled    bool   `json:"is_stalled"`
-	}
-
-	type natsChannel struct {
-		Name          string             `json:"name"`
-		MessagesCount int                `json:"msgs"`
-		BytesCount    int                `json:"bytes"`
-		FirstSequence int                `json:"first_seq"`
-		LastSequence  int                `json:"last_seq"`
-		Subscriptions []natsSubscription `json:"subscriptions"`
-	}
-
-	type natsChannels struct {
-		ClusterId string        `json:"cluster_id"`
-		ServerId  string        `json:"server_id"`
-		Timestamp string        `json:"now"`
-		Offset    int           `json:"offset"`
-		Limit     int           `json:"limit"`
-		Count     int           `json:"count"`
-		Total     int           `json:"total"`
-		Channels  []natsChannel `json:"channels"`
-	}
 
 	router.GET("/", func(c *gin.Context) {
 		url := "http://localhost:8222/streaming/channelsz?subs=1"
