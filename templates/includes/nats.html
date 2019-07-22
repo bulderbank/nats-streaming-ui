@@ -5,9 +5,10 @@
   <p>ServerId: {{ .nats.ServerId }}</p>
 </div>
 
-<div class="ui two cards">
+<div class="ui three column doubling stackable grid">
   {{ range .nats.Channels }}
-  <div class="ui card">
+  <div class="column">
+  <div class="ui fluid card">
     <div class="content">
       <div class="header">{{ .Name }}</div>
       <div class="description">
@@ -33,6 +34,7 @@
         {{.Subscriptions | len}}
       </span>
     </div>
+  </div>
   </div>
   {{ end }}
 </div>
