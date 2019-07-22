@@ -20,10 +20,6 @@ You need a running NATS Streaming cluster in order run the UI.
 kubectl port-forward stan-cluster-nats-streaming-1 8222
 ```
 
-Fetch all dependencies:
-
-```
-
 Run the server using `air` to automatically reload on changes:
 
 ```
