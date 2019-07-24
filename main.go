@@ -1,14 +1,14 @@
 package main
 
 import (
-	"encoding/json"
-	"io/ioutil"
+	"fmt"
 	"log"
 	"net/http"
 	"path/filepath"
-	"time"
 
 	"github.com/Masterminds/sprig"
+	"github.com/bulderbank/nats-streaming-ui/models"
+	"github.com/bulderbank/nats-streaming-ui/utils"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-gonic/gin"
 )
@@ -23,36 +23,36 @@ func main() {
 	})
 
 	router.GET("/", func(c *gin.Context) {
+		c.Redirect(302, "/channels")
+	})
+
+	router.GET("/channels", func(c *gin.Context) {
 		url := "http://localhost:8222/streaming/channelsz?subs=1"
-		spaceClient := http.Client{
-			Timeout: time.Second * 2, // Maximum of 2 secs
-		}
-		req, err := http.NewRequest(http.MethodGet, url, nil)
+
+		chs := models.NatsChannels{}
+		err := utils.JsonGet(url, &chs)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		req.Header.Set("User-Agent", "spacecount-tutorial")
-
-		res, getErr := spaceClient.Do(req)
-		if getErr != nil {
-			log.Fatal(getErr)
-		}
-
-		body, readErr := ioutil.ReadAll(res.Body)
-		if readErr != nil {
-			log.Fatal(readErr)
-		}
-
-		chs := natsChannels{}
-		jsonErr := json.Unmarshal(body, &chs)
-		if jsonErr != nil {
-			log.Fatal(jsonErr)
-		}
-
 		c.HTML(http.StatusOK, "nats.html", gin.H{
-			"title": "NATS Streaming Queues",
+			"title": "NATS Streaming Channels",
 			"nats":  chs,
+		})
+	})
+
+	router.GET("/channels/:channel", func(c *gin.Context) {
+		url := "http://localhost:8222/streaming/channelsz?channel=" + c.Param("channel") + "&subs=1"
+
+		ch := models.NatsChannel{}
+		err := utils.JsonGet(url, &ch)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		c.HTML(http.StatusOK, "channel.html", gin.H{
+			"title":   fmt.Sprintf("NATS Streaming Channel: %s", ch.Name),
+			"channel": ch,
 		})
 	})
 

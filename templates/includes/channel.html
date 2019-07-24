@@ -1,0 +1,91 @@
+{{define "content"}}
+<div class="ui horizontal segments">
+  <div class="ui segment">
+    <p>MessagesCount: {{ .channel.MessagesCount}}</p>
+  </div>
+  <div class="ui segment">
+    <p>BytesCount: {{ .channel.BytesCount}}</p>
+  </div>
+  <div class="ui segment">
+    <p>FirstSequence: {{ .channel.FirstSequence }}</p>
+  </div>
+  <div class="ui segment">
+    <p>LastSequence: {{ .channel.LastSequence }}</p>
+  </div>
+</div>
+
+<div class="ui divider"></div>
+
+<div class="ui three column doubling stackable grid">
+  {{ range .channel.Subscriptions }}
+  <div class="column">
+    <div class="ui fluid card">
+      <div class="content">
+        <div class="header">{{ .ClientId | default "unknown-client" }}</div>
+        <div class="description">
+          <table class="ui small very basic table">
+            <tbody>
+              <tr>
+                <td>Inbox</td>
+                <td>{{ .Inbox }}</td>
+              </tr>
+              <tr>
+                <td>AckInbox</td>
+                <td>{{ .AckInbox }}</td>
+              </tr>
+              <tr>
+                <td>QueueName</td>
+                <td>{{ .QueueName }}</td>
+              </tr>
+              <tr>
+                <td>IsDurable</td>
+                <td>{{ .IsDurable }}</td>
+              </tr>
+              <tr>
+                <td>IsOffline</td>
+                <td>{{ .IsOffline }}</td>
+              </tr>
+              <tr>
+                <td>MaxInflight</td>
+                <td>{{ .MaxInflight }}</td>
+              </tr>
+              <tr>
+                <td>AckWait</td>
+                <td>{{ .AckWait }}</td>
+              </tr>
+              <tr>
+                <td>LastSent</td>
+                <td>{{ .LastSent }}</td>
+              </tr>
+              <tr>
+                <td>PendingCount</td>
+                <td>{{ .PendingCount }}</td>
+              </tr>
+              <tr>
+                <td>IsStalled</td>
+                <td>{{ .IsStalled }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="extra content">
+        <span class="left floated like">
+          {{ if .IsHealthy }}
+          <i class="green heartbeat icon"></i> Healthy
+          {{ else }}
+          <i class="red heartbeat icon"></i> Unhealthy
+          {{ end }}
+        </span>
+        <span class="right floated star">
+          <i class="hourglass outline icon"></i>
+          {{.PendingCount }} pending
+        </span>
+      </div>
+    </div>
+  </div>
+  {{ end }}
+</div>
+{{end}}
+
+{{ define "javascript"}}{{end}}
